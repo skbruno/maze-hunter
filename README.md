@@ -17,6 +17,12 @@ Observações:
 
 ## Qual algoritmo de busca? Comparacao?
 
+- Bruno: GBFS
+
+- Hugo: A*
+
+- Victor: Dijkstra
+
 ## Obrigatorio:
 
 - Analise de resultados
