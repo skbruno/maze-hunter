@@ -1,3 +1,5 @@
+# Especificacao
+
 - Robozinho usando metodo de busca
 
 - Algoritmo 50%
