@@ -1,4 +1,4 @@
-# Especificacao
+# Especificação
 
 - Robozinho usando metodo de busca
 
@@ -15,24 +15,24 @@ Observações:
 
 - Uma pontuação extra para o primeiro e segundo colocados
 
-## Qual algoritmo de busca? Comparacao?
+## Algoritmo de busca
 
-- Bruno: GBFS
+- [] Bruno: BFS - Baseline
 
-- Hugo: A*
+- [] Hugo: A*
 
-- Victor: Dijkstra
+- [] Victor: Dijkstra
 
 ## Obrigatorio:
 
-- Analise de resultados
+- [] Analise de resultados
 
-- Plotar
+- [] Plotar gráfico
 
-- Executar algoritmo n vezes
+- [] Executar algoritmo n vezes
 
 ## Ajustes
 
-- Usar tupla em tudo
+- [x] Usar tupla em tudo
 
-- Verificacao se esta parado
+- [x] Verificacao se esta parado na água
