@@ -17,19 +17,19 @@ Observações:
 
 ## Algoritmo de busca
 
-- [] Bruno: BFS - Baseline
+- [ ] Bruno: BFS - Baseline
 
-- [] Hugo: A*
+- [ ] Hugo: A*
 
-- [] Victor: Dijkstra
+- [ ] Victor: Dijkstra
 
 ## Obrigatorio:
 
-- [] Analise de resultados
+- [ ] Analise de resultados
 
-- [] Plotar gráfico
+- [ ] Plotar gráfico
 
-- [] Executar algoritmo n vezes
+- [ ] Executar algoritmo n vezes
 
 ## Ajustes
 
