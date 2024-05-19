@@ -1,12 +1,13 @@
 import pygame
 import random
 import math
+import collections
 
 # Initialize Pygame
 pygame.init()
 
 # Maze dimensions
-width, height = 800, 800
+width, height = 500, 500
 maze_size = 20  # Adjust for a more complex maze
 block_size = width // maze_size
 
@@ -27,29 +28,18 @@ treasure_image = pygame.image.load('treasure.png')
 treasure_image = pygame.transform.scale(treasure_image, (block_size, block_size))
 
 # Player and treasures
-player_pos = [random.randint(0, maze_size-1), random.randint(0, maze_size-1)]
-treasures = []
-for _ in range(NUM_TREASURES):  # Number of treasures
-    while True:
-        treasure = [random.randint(0, maze_size-1), random.randint(0, maze_size-1)]
-        if treasure not in treasures and treasure != player_pos:
-            treasures.append(treasure)
-            break
+player_pos = (random.randint(0, maze_size-1), random.randint(0, maze_size-1))
+treasures = tuple((random.randint(0, maze_size-1), random.randint(0, maze_size-1)) for _ in range(NUM_TREASURES))
 
 # Generating walls and obstacles dynamically
 def generate_walls():
     walls = []
     for i in range(1, maze_size-1):  # Avoid placing walls on the border
         for j in range(1, maze_size-1):
-            if [i,j] != player_pos \
-               and [i,j] not in treasures \
-               and random.choice([True, False, False]):  
-                walls.append([i, j])
-
-    
+            if (i, j) != player_pos and (i, j) not in treasures and random.choice([True, False, False]):
+                walls.append((i, j))
 
     return walls
-
 
 def generate_water(slope):
     water = []
@@ -61,14 +51,42 @@ def generate_water(slope):
     # Fill the square with water
     for i in range(start_x, start_x + water_size // 2):
         for j in range(start_y, start_y + water_size):
-            water.append([i, j])
+            water.append((i, j))
 
     return water
 
 slope = 0.5  # This is a placeholder; adjust your slope logic as needed
 water = generate_water(slope)
-
 walls = generate_walls()
+
+def bfs_move():
+    global player_pos, treasures, walls, water
+
+    def is_valid_move(x, y):
+        if 0 <= x < maze_size and 0 <= y < maze_size:
+            if (x, y) not in walls and (x, y) not in water:
+                return True
+        return False
+
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
+    queue = collections.deque([(player_pos, [])])
+    visited = set()
+    visited.add(player_pos)
+
+    while queue:
+        current_pos, path = queue.popleft()
+        if current_pos in treasures:
+            return path  # Return the path to the treasure
+        for direction in directions:
+            next_x = current_pos[0] + direction[0]
+            next_y = current_pos[1] + direction[1]
+            if is_valid_move(next_x, next_y):
+                next_pos = (next_x, next_y)
+                if next_pos not in visited:
+                    visited.add(next_pos)
+                    queue.append((next_pos, path + [direction]))
+
+    return []
 
 #### Player movement
 #
@@ -96,8 +114,8 @@ walls = generate_walls()
 #
 
 class Planner:
-  def __init__(self):
-    self.plano = []
+    def __init__(self):
+        self.plano = []
 
 planner = Planner()
 planner.plano.append(3)
@@ -106,18 +124,15 @@ def move_player():
     # Você pode acessar qualquer variável global
     # Incluindo o grid
     global player_pos
-    #print("I am here", player_pos)
     
     if random.randint(0, 5500) == 0:
-      return 'GIVEUP'
+        return 'GIVEUP'
     
     return random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
-    
+
 def manual_move():
-    events =  pygame.event.get()
-    #print(events)
+    events = pygame.event.get()
     for event in events:
-#        print (event)
         if event.type == pygame.QUIT:
             return "GIVEUP"
         elif event.type == pygame.KEYDOWN:
@@ -132,6 +147,9 @@ def manual_move():
             elif event.key == pygame.K_ESCAPE:
                 return "GIVEUP"
     return "NONE"
+
+def bfs_move():
+    pass
 
 # Game loop
 running = True
@@ -159,9 +177,8 @@ while running:
         print("Giving up")
         running = False;   
         
-    #print(next_pos, maze_size)  
     px, py = next_pos          
-    if [px, py] not in walls \
+    if (px, py) not in walls \
        and 0 <= next_pos[0] < maze_size \
        and 0 <= next_pos[1] < maze_size:
         player_pos = next_pos
@@ -173,40 +190,35 @@ while running:
     screen.fill(BLACK)
     for row in range(maze_size):
         for col in range(maze_size):
-            
             rect = pygame.Rect(col*block_size, row*block_size, block_size, block_size)
-            if [col, row] in walls:
+            if (col, row) in walls:
                 pygame.draw.rect(screen, BLACK, rect)
-            elif [col, row] in water:
+            elif (col, row) in water:
                 pygame.draw.rect(screen, BLUE, rect)            
             else:
                 pygame.draw.rect(screen, WHITE, rect)
-            if [col, row] == [px, py]:
+            if (col, row) == (px, py):
                 pygame.draw.rect(screen, RED, rect)
-            elif [col, row] in treasures:
+            elif (col, row) in treasures:
                 pygame.draw.rect(screen, WHITE, rect)
                 screen.blit(treasure_image, (col*block_size, row*block_size))
 
-    if [px, py] in treasures:
-        treasures.remove([px, py])
+    if (px, py) in treasures:
+        treasures = tuple(t for t in treasures if t != (px, py))
         print("Treasure found! Treasures left:", len(treasures))
         
     if len(treasures) <= 4:
-        running = False    
-        
-    if [px, py] in water:
+        running = False   
+
+    if (px, py) in water and direction != "NONE":
         score -= 5
-        print("In water! Paying heavier price:", [px, py])        
+        print("In water! Paying heavier price:", (px, py))
                 
-    
     pygame.display.flip()
     pygame.time.wait(100)  # Slow down the game a bit
     steps += 1
     if not treasures:
         running = False
-    #if steps >= 800: 
-    #    print(f"Maximum number of steps {steps}")
-    #    running = False
 
 found_treasures = NUM_TREASURES - len(treasures)
 print(f"Found {found_treasures} treasures")
