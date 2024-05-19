@@ -34,16 +34,15 @@ treasures = tuple((random.randint(0, maze_size-1), random.randint(0, maze_size-1
 # Generating walls and obstacles dynamically
 def generate_walls():
     walls = []
+
     for i in range(1, maze_size-1):  # Avoid placing walls on the border
         for j in range(1, maze_size-1):
             if (i, j) != player_pos and (i, j) not in treasures and random.choice([True, False, False]):
                 walls.append((i, j))
-
     return walls
 
 def generate_water(slope):
     water = []
-    
     water_size = min(maze_size, maze_size) // 2
     start_x = random.randint(0, maze_size - water_size)
     start_y = random.randint(0, maze_size - water_size)
@@ -52,41 +51,12 @@ def generate_water(slope):
     for i in range(start_x, start_x + water_size // 2):
         for j in range(start_y, start_y + water_size):
             water.append((i, j))
-
     return water
 
 slope = 0.5  # This is a placeholder; adjust your slope logic as needed
 water = generate_water(slope)
 walls = generate_walls()
 
-def bfs_move():
-    global player_pos, treasures, walls, water
-
-    def is_valid_move(x, y):
-        if 0 <= x < maze_size and 0 <= y < maze_size:
-            if (x, y) not in walls and (x, y) not in water:
-                return True
-        return False
-
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
-    queue = collections.deque([(player_pos, [])])
-    visited = set()
-    visited.add(player_pos)
-
-    while queue:
-        current_pos, path = queue.popleft()
-        if current_pos in treasures:
-            return path  # Return the path to the treasure
-        for direction in directions:
-            next_x = current_pos[0] + direction[0]
-            next_y = current_pos[1] + direction[1]
-            if is_valid_move(next_x, next_y):
-                next_pos = (next_x, next_y)
-                if next_pos not in visited:
-                    visited.add(next_pos)
-                    queue.append((next_pos, path + [direction]))
-
-    return []
 
 #### Player movement
 #
