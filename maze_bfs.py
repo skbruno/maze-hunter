@@ -1,7 +1,6 @@
 def game():
     import pygame
     import random
-    import math
     import collections
     import time
 
@@ -30,7 +29,7 @@ def game():
         treasure_image = pygame.image.load('treasure.png')
         treasure_image = pygame.transform.scale(treasure_image, (block_size, block_size))
     except pygame.error:
-        print("Erro ao carrega imagem do tesouro.")
+        print(f"Error loading treasure image")
         return
     
     # Player and treasures
@@ -120,10 +119,10 @@ def game():
     score = 0
     steps = 0
     treasures_collected = 0
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     while running:
-        if treasures_collected >= 8:
+        if treasures_collected > 7:
             running = False
             break
 
@@ -146,6 +145,12 @@ def game():
             next_pos = (player_pos[0], player_pos[1] - 1)  # LEFT
         elif direction == (0, 1):
             next_pos = (player_pos[0], player_pos[1] + 1)  # RIGHT
+        elif direction == "NONE":
+            score += 1
+            steps -= 1
+        else:
+            print("Giving up")
+            running = False;
 
         px, py = next_pos
 
@@ -175,9 +180,9 @@ def game():
         if (px, py) in treasures:
             treasures = tuple(t for t in treasures if t != (px, py))
             treasures_collected += 1
-            print("Treasure found! Treasures left:", len(treasures))
+            print(f"Treasure found! missing {(NUM_TREASURES - 4) - treasures_collected} Treasures")
 
-        if (px, py) in water and direction != "NONE":
+        if (px, py) in water and direction == "NONE":
             score -= 5
             print("In water! Paying heavier price:", (px, py))
 
@@ -185,26 +190,26 @@ def game():
         pygame.time.wait(100)  # Slow down the game a bit
         steps += 1
 
-    end_time = time.time()
+    end_time = time.perf_counter()
     total_time = end_time - start_time
+
     found_treasures = NUM_TREASURES - len(treasures)
     print(f"Found {found_treasures} treasures")
     final_score = (found_treasures * 50) + score
     print(f"Final score: {final_score}")
     print(f"Total time taken: {total_time:.2f} seconds")
+    print(f"Total steps: {steps}")
     pygame.quit()
 
-    return found_treasures, final_score, total_time
+    return found_treasures, final_score, total_time, steps
 
 
 if __name__ == "__main__":
-    test = 0
     number = 1
     my_dic = {}
-    while test < 3:
-        treasures, final_score, total_time = game()
+    while number-1 < 3:
+        treasures, final_score, total_time, steps = game()
         total_time = f"{total_time:.2f}"
-        my_dic[number] = [treasures,final_score,total_time]
+        my_dic[number] = [treasures,final_score,total_time, steps]
         number += 1
-        test += 1
     print(my_dic)
