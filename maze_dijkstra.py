@@ -1,7 +1,7 @@
 def game():
     import pygame
     import random
-    import collections
+    import heapq
     import time
 
     # Initialize Pygame
@@ -27,14 +27,17 @@ def game():
     # Load treasure image
     try:
         treasure_image = pygame.image.load('treasure.png')
-        treasure_image = pygame.transform.scale(treasure_image, (block_size, block_size))
+        treasure_image = pygame.transform.scale(
+            treasure_image, (block_size, block_size))
     except pygame.error:
         print(f"Error loading treasure image")
         return
-    
+
     # Player and treasures
-    player_pos = (random.randint(0, maze_size-1), random.randint(0, maze_size-1))
-    treasures = tuple((random.randint(0, maze_size-1), random.randint(0, maze_size-1)) for _ in range(NUM_TREASURES))
+    player_pos = (random.randint(0, maze_size-1),
+                  random.randint(0, maze_size-1))
+    treasures = tuple((random.randint(
+        0, maze_size-1), random.randint(0, maze_size-1)) for _ in range(NUM_TREASURES))
 
     # Generating walls and obstacles dynamically
     def generate_walls():
@@ -50,7 +53,7 @@ def game():
         water_size = min(maze_size, maze_size) // 2
         start_x = random.randint(0, maze_size - water_size)
         start_y = random.randint(0, maze_size - water_size)
-        
+
         # Fill the square with water
         for i in range(start_x, start_x + water_size // 2):
             for j in range(start_y, start_y + water_size):
@@ -61,32 +64,7 @@ def game():
     water = generate_water(slope)
     walls = generate_walls()
 
-    #### Player movement
-    #
-    # Adicione aqui a lógica de seu jogador
-    #
-    # O objetivo de uma função de callback de movimento do jogador
-    # é determinar a próxima ação do jogador com base no estado atual
-    # do jogo. Ela deve ser capaz de interagir com o estado do jogo, 
-    # como a posição atual do jogador e o layout do labirinto, para
-    # tomar decisões de movimento inteligentes ou aleatórias.
-    # 
-    # - Pode acessar mais não modificar variáveis globais -
-    #
-    #  A posição de agua e de parede é dada por variáveis globais:
-    #
-    #  water = generate_water(slope)
-    #
-    #  walls = generate_walls()
-    #
-    #  Sugestão 1: Juntar todas campos em um único grafo (grid)
-    #  para percorrer de maneira única
-    #
-    #  Sugestão 2: Cria uma classe para representar o modelo de mundo e outra
-    #  para encapsular a tomada de decisão
-    #
-
-    def bfs_move(player_pos, treasures, walls):
+    def dijkstra_move(player_pos, treasures, walls):
 
         def is_valid_move(x, y):
             if 0 <= x < maze_size and 0 <= y < maze_size:
@@ -94,23 +72,28 @@ def game():
                     return True
             return False
 
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
-        queue = collections.deque([(player_pos, [])])
+        # Up, Down, Left, Right
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        pq = [(0, player_pos, [])]  # (cost, current_pos, path)
         visited = set()
-        visited.add(player_pos)
 
-        while queue:
-            current_pos, path = queue.popleft()
+        while pq:
+            cost, current_pos, path = heapq.heappop(pq)
             if current_pos in treasures:
-                return path[0] if path else None  # Return the first step in the path to the treasure
+                # Return the first step in the path to the treasure
+                return path[0] if path else None
+            if current_pos in visited:
+                continue
+            visited.add(current_pos)
             for direction in directions:
                 next_x = current_pos[0] + direction[0]
                 next_y = current_pos[1] + direction[1]
                 if is_valid_move(next_x, next_y):
                     next_pos = (next_x, next_y)
                     if next_pos not in visited:
-                        visited.add(next_pos)
-                        queue.append((next_pos, path + [direction]))
+                        next_cost = cost + 1  # Each move costs 1
+                        heapq.heappush(
+                            pq, (next_cost, next_pos, path + [direction]))
 
         return None
 
@@ -126,8 +109,8 @@ def game():
             running = False
             break
 
-        # Get next move from BFS
-        next_move = bfs_move(player_pos, treasures, walls)
+        # Get next move from Dijkstra
+        next_move = dijkstra_move(player_pos, treasures, walls)
         if not next_move:
             print("No valid move found!")
             running = False
@@ -150,7 +133,7 @@ def game():
             steps -= 1
         else:
             print("Giving up")
-            running = False;
+            running = False
 
         px, py = next_pos
 
@@ -164,7 +147,8 @@ def game():
         screen.fill(BLACK)
         for row in range(maze_size):
             for col in range(maze_size):
-                rect = pygame.Rect(col * block_size, row * block_size, block_size, block_size)
+                rect = pygame.Rect(col * block_size, row *
+                                   block_size, block_size, block_size)
                 if (col, row) in walls:
                     pygame.draw.rect(screen, BLACK, rect)
                 elif (col, row) in water:
@@ -175,14 +159,16 @@ def game():
                     pygame.draw.rect(screen, RED, rect)
                 elif (col, row) in treasures:
                     pygame.draw.rect(screen, WHITE, rect)
-                    screen.blit(treasure_image, (col * block_size, row * block_size))
+                    screen.blit(treasure_image,
+                                (col * block_size, row * block_size))
 
         if (px, py) in treasures:
             treasures = tuple(t for t in treasures if t != (px, py))
             treasures_collected += 1
-            print(f"Treasure found! missing {(NUM_TREASURES - 4) - treasures_collected} Treasures")
+            print(f"Treasure found! missing {
+                  (NUM_TREASURES - 4) - treasures_collected} Treasures")
 
-        if (px, py) in water:
+        if (px, py) in water and direction == "NONE":
             score -= 5
             print("In water! Paying heavier price:", (px, py))
 
@@ -208,9 +194,9 @@ if __name__ == "__main__":
     number = 1
     my_dic = {}
     loop = 30
-    while number-1 < 30:
+    while number-1 < loop:
         treasures, final_score, total_time, steps = game()
         total_time = f"{total_time:.2f}"
-        my_dic[number] = [treasures,final_score,total_time, steps]
+        my_dic[number] = [treasures, final_score, total_time, steps]
         number += 1
     print(my_dic)

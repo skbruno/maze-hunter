@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 # Especificação
+=======
+![1](./Figure_1.png)
+![2](./Figure_2.png)
+![3](./Figure_3.png)
+![4](./Figure_4.png)
+
+# Especificacao
+>>>>>>> c9698ee81c8a01464ee92cd5aedce65c5d971ed2
 
 - Robozinho usando metodo de busca
 
@@ -17,11 +26,11 @@ Observações:
 
 ## Algoritmo de busca
 
-- [ ] Bruno: BFS - Baseline
+- [x] Bruno: BFS - Baseline
 
-- [ ] Hugo: A*
+- [x] Hugo: A*
 
-- [ ] Victor: Dijkstra
+- [x] Victor: Dijkstra
 
 ## Obrigatorio:
 
