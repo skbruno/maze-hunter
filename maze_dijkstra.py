@@ -168,7 +168,7 @@ def game():
             print(f"Treasure found! missing {
                   (NUM_TREASURES - 4) - treasures_collected} Treasures")
 
-        if (px, py) in water and direction == "NONE":
+        if (px, py) in water:
             score -= 5
             print("In water! Paying heavier price:", (px, py))
 
@@ -193,7 +193,7 @@ def game():
 if __name__ == "__main__":
     number = 1
     my_dic = {}
-    loop = 30
+    loop = 3
     while number-1 < loop:
         treasures, final_score, total_time, steps = game()
         total_time = f"{total_time:.2f}"

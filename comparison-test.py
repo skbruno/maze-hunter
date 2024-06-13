@@ -6,7 +6,6 @@ import collections
 import time
 import matplotlib.pyplot as plt
 
-
 def game(algorithm='bfs'):
     # Initialize Pygame
     pygame.init()
@@ -67,7 +66,7 @@ def game(algorithm='bfs'):
     water = generate_water(slope)
     walls = generate_walls()
     """
-    Função do algoritmo de BFS 
+    Function of the BFS algorithm
     """
     def bfs_move(player_pos, treasures, walls):
 
@@ -99,7 +98,7 @@ def game(algorithm='bfs'):
 
         return None
     """
-    Função do algoritmo de dijkstra
+    Function of the dijkstra algorithm
     """
     def dijkstra_move(player_pos, treasures, walls):
 
@@ -134,7 +133,7 @@ def game(algorithm='bfs'):
 
         return None
     """
-    Função do algoritmo de A*
+    Function of the A* algorithm
     """
     def a_star_move(player_pos, treasures, walls, water):
 
@@ -181,7 +180,7 @@ def game(algorithm='bfs'):
         return None
     
     """
-    Start inicial com bfs depois os outros algoritmo 
+    Start initially with BFS, then the other algorithms
     """
     if algorithm == 'bfs':
         move_function = bfs_move
@@ -285,7 +284,7 @@ def game(algorithm='bfs'):
     return found_treasures, final_score, total_time, steps
 
 """
-Definindo tempo que todos os algoritmo vão rodar e guardando eles em um dicionario
+Defining the runtime for all algorithms and storing them in a dictionary
 """
 def run_comparisons(num_runs):
     results = {'bfs': [], 'dijkstra': [], 'astar': []}
@@ -303,7 +302,7 @@ def run_comparisons(num_runs):
     return results
 
 """
-Plotando o resultado e fazendo as comparação das metricas
+Plotting the results and comparing the metrics
 """
 def plot_results(results):
     bfs_results = results['bfs']

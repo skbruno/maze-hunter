@@ -207,8 +207,8 @@ def game():
 if __name__ == "__main__":
     number = 1
     my_dic = {}
-    loop = 30
-    while number-1 < 30:
+    loop = 3
+    while number-1 < loop:
         treasures, final_score, total_time, steps = game()
         total_time = f"{total_time:.2f}"
         my_dic[number] = [treasures,final_score,total_time, steps]

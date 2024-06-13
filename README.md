@@ -34,11 +34,11 @@ Observações:
 
 ## Obrigatorio:
 
-- [ ] Analise de resultados
+- [x] Analise de resultados
 
-- [ ] Plotar gráfico
+- [x] Plotar gráfico
 
-- [ ] Executar algoritmo n vezes
+- [x] Executar algoritmo n vezes
 
 ## Ajustes
 
